@@ -23,6 +23,9 @@ function library:window(name,name2)
 	local layout  = utility.new("UIListLayout",{Parent = tabs, FillDirection = Enum.FillDirection.Horizontal, SortOrder = Enum.SortOrder.LayoutOrder})
 	
 	local tabhand = {}
+	function tabhand:setpage(name)
+		container_2[name].Visible = true
+	end
 	function tabhand:tab(name)
 		local tab = utility.new("TextButton",{Name = name, Parent = tabs, BackgroundColor3 = Color3.fromRGB(26, 26, 26), BorderColor3 = Color3.fromRGB(17, 86, 31), Position = UDim2.new(0.6013363, 0, 0, 0), Size = UDim2.new(0, 223, 0, 24), AutoButtonColor = false, Font = Enum.Font.SourceSansSemibold, Text = name, TextColor3 = Color3.fromRGB(38, 212, 105), TextSize = 16})
 		local newpage = utility.new("ScrollingFrame",{Name = name, Parent = container_2, BackgroundColor3 = Color3.fromRGB(255, 255, 255), BackgroundTransparency = 1, BorderSizePixel = 0, ClipsDescendants = true, Selectable = false, Size = UDim2.new(0, 444, 0, 298), ScrollBarThickness = 0})
@@ -43,8 +46,11 @@ function library:window(name,name2)
 			for _,v in next, container_2:GetChildren() do
 				v.Visible = false
 			end
-			newpage.Visible = true
 		end)
+		for _,v in next, container_2:GetChildren() do
+			v.Visible = false
+		end
+		newpage.Visible = true
 		local sectionhand = {}
 		function sectionhand:section(name,side)
 			local section = utility.new("Frame",{Name = name, Parent = newpage[side], BackgroundColor3 = Color3.fromRGB(31, 31, 31), Position = UDim2.new(0, 531, 0, 23), Size = UDim2.new(0, 202, 0, 68), ZIndex = 2, BorderColor3 = Color3.fromRGB(21, 21, 21),AutomaticSize = Enum.AutomaticSize.XY})
@@ -208,10 +214,12 @@ function library:window(name,name2)
 					label.TextXAlignment = Enum.TextXAlignment.Left
 				end
 			end
+			
 			return itemshandler
 		end
 		return sectionhand
 	end
 	return tabhand
 end
+
 return library
