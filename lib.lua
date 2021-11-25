@@ -11,7 +11,7 @@ function utility.new(ins,props)
 end
 
 function library:window(name,name2)
-	local sg = utility.new("ScreenGui",{Name = "kash", Parent = game.Players.LocalPlayer.PlayerGui, ZIndexBehavior = Enum.ZIndexBehavior.Sibling})
+	local sg = utility.new("ScreenGui",{Name = "kash", Parent = game.CoreGui, ZIndexBehavior = Enum.ZIndexBehavior.Sibling})
 	local mainframe = utility.new("Frame",{Name = "mainframe", Parent = sg, BackgroundColor3 = Color3.fromRGB(35, 34, 35), BorderColor3 = Color3.fromRGB(0, 0, 0), Position = UDim2.new(0,600,0,200), Size = UDim2.new(0, 448, 0, 356)})
 	local container = utility.new("Frame",{Name = "container", Parent = mainframe, BackgroundColor3 = Color3.fromRGB(31, 31, 31), BorderColor3 = Color3.fromRGB(17, 86, 31), Position = UDim2.new(0, 1, 0, 2), Size = UDim2.new(0, 446, 0, 353)})
 	local container_2 = utility.new("Frame",{Name = "container2", Parent = container, BackgroundColor3 = Color3.fromRGB(255, 255, 255), BackgroundTransparency = 1, Position = UDim2.new(0, 0, 0, 55), Size = UDim2.new(0, 444, 0, 298)})
@@ -46,6 +46,7 @@ function library:window(name,name2)
 			for _,v in next, container_2:GetChildren() do
 				v.Visible = false
 			end
+			newpage.Visible = true
 		end)
 		for _,v in next, container_2:GetChildren() do
 			v.Visible = false
@@ -96,7 +97,7 @@ function library:window(name,name2)
 				local droplayout = utility.new("UIListLayout",{Parent = instances,SortOrder = Enum.SortOrder.LayoutOrder,Padding = UDim.new(0, 2)})
 				local droptog = false
 				for _,v in next, values do
-					local textbutton = utility.new("TextButton",{Name = "yea",Parent = instances,BackgroundColor3 = Color3.fromRGB(31, 31, 31),BackgroundTransparency = 0,Position = UDim2.new(0.034285713, 0, 0, 0),Size = UDim2.new(0, 169, 0, 21),Font = Enum.Font.SourceSans,TextColor3 = Color3.fromRGB(241, 241, 241),TextSize = 14,TextXAlignment = Enum.TextXAlignment.Left,BorderColor3 = Color3.fromRGB(17, 86, 31),Text = " "..tostring(v),ZIndex = 7})
+					local textbutton = utility.new("TextButton",{Name = tostring(v),Parent = instances,BackgroundColor3 = Color3.fromRGB(31, 31, 31),BackgroundTransparency = 0,Position = UDim2.new(0.034285713, 0, 0, 0),Size = UDim2.new(0, 169, 0, 21),Font = Enum.Font.SourceSans,TextColor3 = Color3.fromRGB(241, 241, 241),TextSize = 14,TextXAlignment = Enum.TextXAlignment.Left,BorderColor3 = Color3.fromRGB(17, 86, 31),Text = " "..tostring(v),ZIndex = 7})
 					textbutton.MouseButton1Click:connect(function()
 						current.Text = " - "..textbutton.Name
 						callback(v)
@@ -187,9 +188,6 @@ function library:window(name,name2)
 					end
 					currentkey.Text = "["..(cuts[value] or value).."]"
 					val = value
-					if tog == true then
-						callback(val)
-					end
 				end
 				
 				currentkey.MouseButton1Click:connect(function()
@@ -206,6 +204,11 @@ function library:window(name,name2)
 						utility:keyset(key.KeyCode.Name)
 					end
 				end)
+				uis.InputBegan:connect(function(key)
+					if key.KeyCode.Name == val and tog == true then
+						callback()
+					end
+				end)
 			end
 			function itemshandler:label(text,left)
 				left = left or false
@@ -214,12 +217,10 @@ function library:window(name,name2)
 					label.TextXAlignment = Enum.TextXAlignment.Left
 				end
 			end
-			
 			return itemshandler
 		end
 		return sectionhand
 	end
 	return tabhand
 end
-
 return library
