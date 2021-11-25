@@ -214,10 +214,4 @@ function library:window(name,name2)
 	end
 	return tabhand
 end
-local win = library:window("ka$h", "hook")
-local tab = win:tab("sexual")
-local tab2 = win:tab("yup")
-local tab3 = win:tab("visuals")
-local tab4 = win:tab("world")
-local section = tab:section("fuck","left")
 return library
