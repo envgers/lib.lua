@@ -84,11 +84,7 @@ function library:window(name,name2)
 				end)
 			end
 			function itemshandler:dropdown(name,values,default,callback)
-				if default then
-					callback(default)
-				else
-					default = default or ""
-				end
+				default = default or nil
 				local dropcontainer = utility.new("Frame",{Name = "dropcontainer",Parent = itemcontainer,BackgroundColor3 = Color3.fromRGB(255, 255, 255),BackgroundTransparency = 1,Position = UDim2.new(0, 0, 0.467741936, 0),Size = UDim2.new(0, 175, 0, 33)})
 				local droptitle = utility.new("TextLabel",{Name = "droptitle",Parent = dropcontainer,BackgroundColor3 = Color3.fromRGB(255, 255, 255),BackgroundTransparency = 1,Position = UDim2.new(-0.02, 0, 0, -3),Size = UDim2.new(0, 179, 0, 13),Font = Enum.Font.SourceSans,TextColor3 = Color3.fromRGB(186, 186, 186),TextSize = 14,TextXAlignment = Enum.TextXAlignment.Left,Text = name})
 				local dropbubtton = utility.new("Frame",{Name = "dropbutton",Parent = dropcontainer,Active = true,BackgroundColor3 = Color3.fromRGB(25, 25, 25),BorderColor3 = Color3.fromRGB(17, 86, 31),Position = UDim2.new(0, 0, 0, 13),Selectable = true,Size = UDim2.new(0, 175, 0, 19)})	
@@ -96,6 +92,9 @@ function library:window(name,name2)
 				local instances = utility.new("Frame",{Name = "instance",Parent = dropbubtton,BackgroundColor3 = Color3.fromRGB(31, 31, 31),BorderColor3 = Color3.fromRGB(17, 86, 31),Position = UDim2.new(0, 0, 0, 20),Size = UDim2.new(0, 175, 0, 20),AutomaticSize = Enum.AutomaticSize.XY,Visible = false,ZIndex = 6})
 				local droplayout = utility.new("UIListLayout",{Parent = instances,SortOrder = Enum.SortOrder.LayoutOrder,Padding = UDim.new(0, 2)})
 				local droptog = false
+				if values[default] then
+				    current.Text = " - "..default
+				end
 				for _,v in next, values do
 					local textbutton = utility.new("TextButton",{Name = tostring(v),Parent = instances,BackgroundColor3 = Color3.fromRGB(31, 31, 31),BackgroundTransparency = 0,Position = UDim2.new(0.034285713, 0, 0, 0),Size = UDim2.new(0, 169, 0, 21),Font = Enum.Font.SourceSans,TextColor3 = Color3.fromRGB(241, 241, 241),TextSize = 14,TextXAlignment = Enum.TextXAlignment.Left,BorderColor3 = Color3.fromRGB(17, 86, 31),Text = " "..tostring(v),ZIndex = 7})
 					textbutton.MouseButton1Click:connect(function()
@@ -111,6 +110,9 @@ function library:window(name,name2)
 						instances.Visible = false
 					end
 				end)
+				if default ~= nil then
+				    callback(default)
+				end
 			end
 			function itemshandler:slider(name,min,default,max,callback)
 				default = default or  50
