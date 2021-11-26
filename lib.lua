@@ -11,7 +11,7 @@ function utility.new(ins,props)
 end
 
 function library:window(name,name2)
-	local sg = utility.new("ScreenGui",{Name = "kash", Parent = game.CoreGui, ZIndexBehavior = Enum.ZIndexBehavior.Sibling})
+	local sg = utility.new("ScreenGui",{Name = "kash", Parent = game.Players.LocalPlayer.PlayerGui, ZIndexBehavior = Enum.ZIndexBehavior.Sibling})
 	local mainframe = utility.new("Frame",{Name = "mainframe", Parent = sg, BackgroundColor3 = Color3.fromRGB(35, 34, 35), BorderColor3 = Color3.fromRGB(0, 0, 0), Position = UDim2.new(0,600,0,200), Size = UDim2.new(0, 448, 0, 356)})
 	local container = utility.new("Frame",{Name = "container", Parent = mainframe, BackgroundColor3 = Color3.fromRGB(31, 31, 31), BorderColor3 = Color3.fromRGB(17, 86, 31), Position = UDim2.new(0, 1, 0, 2), Size = UDim2.new(0, 446, 0, 353)})
 	local container_2 = utility.new("Frame",{Name = "container2", Parent = container, BackgroundColor3 = Color3.fromRGB(255, 255, 255), BackgroundTransparency = 1, Position = UDim2.new(0, 0, 0, 55), Size = UDim2.new(0, 444, 0, 298)})
@@ -84,7 +84,11 @@ function library:window(name,name2)
 				end)
 			end
 			function itemshandler:dropdown(name,values,default,callback)
-				default = default or nil
+				if default then
+					callback(default)
+				else
+					default = default or ""
+				end
 				local dropcontainer = utility.new("Frame",{Name = "dropcontainer",Parent = itemcontainer,BackgroundColor3 = Color3.fromRGB(255, 255, 255),BackgroundTransparency = 1,Position = UDim2.new(0, 0, 0.467741936, 0),Size = UDim2.new(0, 175, 0, 33)})
 				local droptitle = utility.new("TextLabel",{Name = "droptitle",Parent = dropcontainer,BackgroundColor3 = Color3.fromRGB(255, 255, 255),BackgroundTransparency = 1,Position = UDim2.new(-0.02, 0, 0, -3),Size = UDim2.new(0, 179, 0, 13),Font = Enum.Font.SourceSans,TextColor3 = Color3.fromRGB(186, 186, 186),TextSize = 14,TextXAlignment = Enum.TextXAlignment.Left,Text = name})
 				local dropbubtton = utility.new("Frame",{Name = "dropbutton",Parent = dropcontainer,Active = true,BackgroundColor3 = Color3.fromRGB(25, 25, 25),BorderColor3 = Color3.fromRGB(17, 86, 31),Position = UDim2.new(0, 0, 0, 13),Selectable = true,Size = UDim2.new(0, 175, 0, 19)})	
@@ -92,9 +96,6 @@ function library:window(name,name2)
 				local instances = utility.new("Frame",{Name = "instance",Parent = dropbubtton,BackgroundColor3 = Color3.fromRGB(31, 31, 31),BorderColor3 = Color3.fromRGB(17, 86, 31),Position = UDim2.new(0, 0, 0, 20),Size = UDim2.new(0, 175, 0, 20),AutomaticSize = Enum.AutomaticSize.XY,Visible = false,ZIndex = 6})
 				local droplayout = utility.new("UIListLayout",{Parent = instances,SortOrder = Enum.SortOrder.LayoutOrder,Padding = UDim.new(0, 2)})
 				local droptog = false
-				if values[default] then
-				    current.Text = " - "..default
-				end
 				for _,v in next, values do
 					local textbutton = utility.new("TextButton",{Name = tostring(v),Parent = instances,BackgroundColor3 = Color3.fromRGB(31, 31, 31),BackgroundTransparency = 0,Position = UDim2.new(0.034285713, 0, 0, 0),Size = UDim2.new(0, 169, 0, 21),Font = Enum.Font.SourceSans,TextColor3 = Color3.fromRGB(241, 241, 241),TextSize = 14,TextXAlignment = Enum.TextXAlignment.Left,BorderColor3 = Color3.fromRGB(17, 86, 31),Text = " "..tostring(v),ZIndex = 7})
 					textbutton.MouseButton1Click:connect(function()
@@ -110,9 +111,6 @@ function library:window(name,name2)
 						instances.Visible = false
 					end
 				end)
-				if default ~= nil then
-				    callback(default)
-				end
 			end
 			function itemshandler:slider(name,min,default,max,callback)
 				default = default or  50
@@ -218,6 +216,96 @@ function library:window(name,name2)
 				if left == true then
 					label.TextXAlignment = Enum.TextXAlignment.Left
 				end
+			end
+			function itemshandler:colorpicker(text,default,callback)
+				local oncp = false
+				local ondark = false
+				local color = {1,1,1}
+				local h, s, v = Color3.toHSV(default)
+				local colorpicker = utility.new("TextLabel",{Name = "colorpicker",Parent = itemcontainer,BackgroundColor3 = Color3.fromRGB(255, 255, 255),BackgroundTransparency = 1,Size = UDim2.new(0, 132, 0, 17),Font = Enum.Font.SourceSansBold,Text = name,TextColor3 = Color3.fromRGB(234, 234, 234),TextSize = 14,TextXAlignment = Enum.TextXAlignment.Left})
+				local button = utility.new("TextButton",{Name = "button",Parent = colorpicker,BackgroundColor3 = default,BorderColor3 = Color3.fromRGB(17, 86, 31),BorderSizePixel = 3,Position = UDim2.new(1.08333337, 0, 0, 0),Size = UDim2.new(0, 36, 0, 18),Font = Enum.Font.SourceSans,Text = "",TextColor3 = Color3.fromRGB(0, 0, 0),TextSize = 14})
+				local rgb = utility.new("ImageButton",{Visible = false,Name = "rgb",Parent = button,BackgroundColor3 = Color3.fromRGB(255, 255, 255),BorderColor3 = Color3.fromRGB(17, 86, 31),BorderSizePixel = 2,Position = UDim2.new(1.25, 0, 0, 0),Size = UDim2.new(0, 124, 0, 124),Image = "rbxassetid://6523286724"})
+				local darkness = utility.new("ImageButton",{Visible = false,Name = "darkness",Parent = button,BackgroundColor3 = Color3.fromRGB(255, 255, 255),BorderColor3 = Color3.fromRGB(17, 86, 31),BorderSizePixel = 2,Position = UDim2.new(4.86111116, 0, 0, 0),Size = UDim2.new(0, 15, 0, 124),Image = "rbxassetid://6523291212"})
+				local darkc = utility.new("ImageLabel",{Name = "darkcircle",Parent = darkness,BackgroundColor3 = Color3.fromRGB(255, 255, 255),BackgroundTransparency = 1,Size = UDim2.new(0, 14, 0, 14),Image = "rbxassetid://3926309567",ImageColor3 = Color3.fromRGB(0, 0, 0),ImageRectSize = Vector2.new(48, 48),ImageRectOffset = Vector2.new(628, 420),ImageTransparency = 1})
+				local rgbc = utility.new("ImageLabel",{Name = "rgbcircle",Parent = rgb,BackgroundColor3 = Color3.fromRGB(255, 255, 255),BackgroundTransparency = 1,Size = UDim2.new(0, 14, 0, 14),Image = "rbxassetid://3926309567",ImageColor3 = Color3.fromRGB(0, 0, 0),ImageRectSize = Vector2.new(48, 48),ImageRectOffset = Vector2.new(628, 420),ImageTransparency = 1})
+				
+				local function zigzag(x) return math.acos(math.cos(x*math.pi))/math.pi end
+				local function cp()
+					if oncp then
+						local x,y = mouse.X - rgb.AbsolutePosition.X,mouse.Y - rgb.AbsolutePosition.Y
+						local maxX,maxY = rgb.AbsoluteSize.X,rgb.AbsoluteSize.Y
+						if x< 0 then x = 0 end
+						if x>maxX then x=maxX end
+						if y<0 then y = 0 end
+						if y>maxY then y = maxY end
+						x = x/maxX
+						y = y/maxY
+						local cx = rgbc.AbsolutePosition.X/2
+						local cy = rgbc.AbsolutePosition.Y/2
+						rgbc.Position = UDim2.new(x,-cx,y,-cy)
+						color = {1-x,1-y,color[3]}
+						local realcolor = Color3.fromHSV(color[1],color[2],color[3])
+						button.BackgroundColor3 = realcolor
+						callback(realcolor)
+					end
+					if ondark then
+						local y = mouse.Y - darkness.AbsolutePosition.Y
+						local maxY = darkness.AbsoluteSize.Y
+						if y<0 then y = 8 end
+						if y>maxY then y = maxY end
+						y = y/maxY
+						local cy = darkc.AbsoluteSize.Y/2
+						darkc.Position = UDim2.new(0.5,0,y,-cy)
+						darkc.ImageColor3 = Color3.fromHSV(0,0,y)
+						color = {color[1],color[2],1-y}
+						local realcolor = Color3.fromHSV(color[1],color[2],color[3])
+						button.BackgroundColor3 = realcolor
+						callback(realcolor)
+					end
+				end
+				local function setcolor(tbl)
+					local cx = rgbc.AbsoluteSize.X/2
+					local cy = rgbc.AbsoluteSize.Y/2
+					color = {tbl[1],tbl[2],tbl[3]}
+					rgbc.Position = UDim2.new(color[1],-cx,color[2]-1,-cy)
+					local realcolor = Color3.fromHSV(color[1],color[2],color[3])
+					button.BackgroundColor3 = realcolor
+					callback(realcolor)
+				end
+				mouse.Move:connect(cp)
+				rgb.MouseButton1Down:connect(function()
+					oncp = true
+				end)
+				darkness.MouseButton1Down:connect(function()
+					ondark = true
+				end)
+				uis.InputEnded:connect(function(key)
+					if key.UserInputType.Name == "MouseButton1" then
+						if ondark then ondark = false end
+						if oncp then oncp = false end
+					end
+				end)
+				setcolor({h,s,v})
+				local tog = false
+				button.MouseButton1Click:connect(function()
+					tog = not tog
+					if tog then
+						rgb.Visible = true
+						darkness.Visible = true
+					else
+						rgb.Visible = false
+						darkness.Visible = false
+					end
+				end)
+			end
+			function itemshandler:textbox(name,default,callback)
+				default = default or ""
+				local label = utility.new("TextLabel",{Parent = itemcontainer,BackgroundColor3 = Color3.fromRGB(255, 255, 255),BackgroundTransparency = 1,Size = UDim2.new(0, 175, 0, 14),Font = Enum.Font.SourceSans,Text = name,TextColor3 = Color3.fromRGB(255, 255, 255),TextSize = 14,TextStrokeColor3 = Color3.fromRGB(191, 191, 191),TextXAlignment = Enum.TextXAlignment.Left})
+				local textbox = utility.new("TextBox",{Parent = label,BackgroundColor3 = Color3.fromRGB(25, 25, 25),BorderColor3 = Color3.fromRGB(17, 86, 31),Position = UDim2.new(0, 0, 1.10000002, 0),Size = UDim2.new(0, 175, 0, 14),Font = Enum.Font.SourceSansBold,PlaceholderColor3 = Color3.fromRGB(178, 178, 178),Text = default,TextColor3 = Color3.fromRGB(209, 209, 209),TextSize = 14})
+				textbox.FocusLost:connect(function(p)
+					if not p then return end
+					callback(textbox.Text)
+				end)	
 			end
 			return itemshandler
 		end
