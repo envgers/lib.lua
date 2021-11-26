@@ -1,3 +1,4 @@
+local flags = {}
 local utility = {}
 local library = {}
 local mouse = game.Players.LocalPlayer:GetMouse()
@@ -67,14 +68,29 @@ function library:window(name,name2)
 					callback()
 				end)
 			end
-			function itemshandler:toggle(name,callback)
+			function itemshandler:toggle(name,default,callback,flag)
+                default = default or false
+                flag = flag or name or ""
 				callback = callback or function() end
 				local togcontainer = utility.new("Frame",{Name = "togglecontainer",Parent = itemcontainer,BackgroundColor3 = Color3.fromRGB(255, 255, 255),BackgroundTransparency = 1,BorderSizePixel = 0,Size = UDim2.new(0, 175, 0, 23)})
 				local togbutton = utility.new("TextButton",{Name = "toggle",Parent = togcontainer,BackgroundColor3 = Color3.fromRGB(18, 18, 18),BorderColor3 = Color3.fromRGB(17, 86, 31),Position = UDim2.new(0, 0, 0, 5),Size = UDim2.new(0, 11, 0, 11),AutoButtonColor = false,Font = Enum.Font.SourceSans,Text = "",TextColor3 = Color3.fromRGB(0, 0, 0),TextSize = 14})
 				local togtitle = utility.new("TextLabel",{Name = "togglename", Text = name,Parent = togcontainer,BackgroundColor3 = Color3.fromRGB(255, 255, 255),BackgroundTransparency = 1,Position = UDim2.new(0.1, 0, 0, 0),Size = UDim2.new(0, 150, 0, 23),Font = Enum.Font.SourceSans,TextColor3 = Color3.fromRGB(247, 247, 247),TextSize = 14,TextXAlignment = Enum.TextXAlignment.Left})
 				local togval = false
+                if flag ~= "" then
+                    flags[flag] = default
+                end
+                togval = default
+                if togval then
+                    togbutton.BackgroundColor3 = Color3.fromRGB(33, 135, 0)
+                else
+                    togbutton.BackgroundColor3 = Color3.fromRGB(26, 26, 26)
+                end
+                callback(togval)
 				togbutton.MouseButton1Click:connect(function()
 					togval = not togval
+                    if flag ~= "" then
+                        flags[flag] = togval
+                    end
 					callback(togval)
 					if togval then
 						togbutton.BackgroundColor3 = Color3.fromRGB(33, 135, 0)
@@ -83,7 +99,8 @@ function library:window(name,name2)
 					end
 				end)
 			end
-			function itemshandler:dropdown(name,values,default,callback)
+			function itemshandler:dropdown(name,values,default,callback,flag)
+                flag = flag or name or ""
 				if default then
 					callback(default)
 				else
@@ -96,10 +113,16 @@ function library:window(name,name2)
 				local instances = utility.new("Frame",{Name = "instance",Parent = dropbubtton,BackgroundColor3 = Color3.fromRGB(31, 31, 31),BorderColor3 = Color3.fromRGB(17, 86, 31),Position = UDim2.new(0, 0, 0, 20),Size = UDim2.new(0, 175, 0, 20),AutomaticSize = Enum.AutomaticSize.XY,Visible = false,ZIndex = 6})
 				local droplayout = utility.new("UIListLayout",{Parent = instances,SortOrder = Enum.SortOrder.LayoutOrder,Padding = UDim.new(0, 2)})
 				local droptog = false
+                if flag ~= "" then
+                    flags[flag] = default
+                end
 				for _,v in next, values do
 					local textbutton = utility.new("TextButton",{Name = tostring(v),Parent = instances,BackgroundColor3 = Color3.fromRGB(31, 31, 31),BackgroundTransparency = 0,Position = UDim2.new(0.034285713, 0, 0, 0),Size = UDim2.new(0, 169, 0, 21),Font = Enum.Font.SourceSans,TextColor3 = Color3.fromRGB(241, 241, 241),TextSize = 14,TextXAlignment = Enum.TextXAlignment.Left,BorderColor3 = Color3.fromRGB(17, 86, 31),Text = " "..tostring(v),ZIndex = 7})
 					textbutton.MouseButton1Click:connect(function()
 						current.Text = " - "..textbutton.Name
+                        if flag ~= "" then
+                            flags[flag] = v
+                        end
 						callback(v)
 					end)
 				end
@@ -112,7 +135,8 @@ function library:window(name,name2)
 					end
 				end)
 			end
-			function itemshandler:slider(name,min,default,max,callback)
+			function itemshandler:slider(name,min,default,max,callback,flag)
+                flag = flag or name or ""
 				default = default or  50
 				min = min or 0
 				max = max or 100
@@ -124,6 +148,10 @@ function library:window(name,name2)
 				local slider = utility.new("TextButton",{Name = "sliderbutton",Parent = slidecontainer,BackgroundColor3 = Color3.fromRGB(25, 25, 25),BorderColor3 = Color3.fromRGB(17, 86, 31),Position = UDim2.new(0, 0, 0, 13),Size = UDim2.new(0, 175, 0, 13),AutoButtonColor = false,Text = val,Font = Enum.Font.GothamBlack,TextSize = 10,TextColor3 = Color3.fromRGB(255, 255, 255),ZIndex = 5})
 				local bar = utility.new("Frame",{Name = "bar",Parent = slider,BackgroundColor3 = Color3.fromRGB(34, 59, 31),BackgroundTransparency = 0.5,BorderSizePixel = 0,Size = UDim2.new(0, 0, 0, 19)})
 				
+                if flag ~= "" then
+                    flags[flag] = default
+                end
+
 				slider.MouseButton1Down:connect(function()
 					val = math.floor((((tonumber(max)-tonumber(min))/175)*bar.AbsoluteSize.X)+tonumber(min)) or 0
 					pcall(function()
@@ -147,13 +175,20 @@ function library:window(name,name2)
 							end)
 							bar.Size = UDim2.new(0,math.clamp(mouse.X-bar.AbsolutePosition.X,0,175),0,13)
 							slider.Text = val
+                            if flag ~= "" then
+                                flags[flag] = val
+                            end
 							movecon:Disconnect()
 							movrel:Disconnect()
 						end
 					end)
 				end)
 			end
-			function itemshandler:keybind(name,default,callback)
+			function itemshandler:keybind(name,default,callback,flag)
+                if flag ~= "" then
+                    flags[flag] = default
+                end
+                flag = flag or name or ""
 				default = default or "None"
 				local val = default
 				local cuts = {
@@ -188,6 +223,9 @@ function library:window(name,name2)
 					end
 					currentkey.Text = "["..(cuts[value] or value).."]"
 					val = value
+                    if flag ~= "" then
+                        flags[flag] = value
+                    end
 				end
 				
 				currentkey.MouseButton1Click:connect(function()
@@ -217,7 +255,8 @@ function library:window(name,name2)
 					label.TextXAlignment = Enum.TextXAlignment.Left
 				end
 			end
-			function itemshandler:colorpicker(text,default,callback)
+			function itemshandler:colorpicker(text,default,callback,flag)
+                flag = flag or text or ""
 				local oncp = false
 				local ondark = false
 				local color = {1,1,1}
@@ -229,6 +268,10 @@ function library:window(name,name2)
 				local darkc = utility.new("ImageLabel",{Name = "darkcircle",Parent = darkness,BackgroundColor3 = Color3.fromRGB(255, 255, 255),BackgroundTransparency = 1,Size = UDim2.new(0, 14, 0, 14),Image = "rbxassetid://3926309567",ImageColor3 = Color3.fromRGB(0, 0, 0),ImageRectSize = Vector2.new(48, 48),ImageRectOffset = Vector2.new(628, 420),ImageTransparency = 1})
 				local rgbc = utility.new("ImageLabel",{Name = "rgbcircle",Parent = rgb,BackgroundColor3 = Color3.fromRGB(255, 255, 255),BackgroundTransparency = 1,Size = UDim2.new(0, 14, 0, 14),Image = "rbxassetid://3926309567",ImageColor3 = Color3.fromRGB(0, 0, 0),ImageRectSize = Vector2.new(48, 48),ImageRectOffset = Vector2.new(628, 420),ImageTransparency = 1})
 				
+                if flag ~= "" then
+                    flags[flag] = default
+                end
+
 				local function zigzag(x) return math.acos(math.cos(x*math.pi))/math.pi end
 				local function cp()
 					if oncp then
@@ -270,6 +313,9 @@ function library:window(name,name2)
 					rgbc.Position = UDim2.new(color[1],-cx,color[2]-1,-cy)
 					local realcolor = Color3.fromHSV(color[1],color[2],color[3])
 					button.BackgroundColor3 = realcolor
+                    if flag ~= "" then
+                        flags[flag] = tbl
+                    end
 					callback(realcolor)
 				end
 				mouse.Move:connect(cp)
@@ -298,14 +344,23 @@ function library:window(name,name2)
 					end
 				end)
 			end
-			function itemshandler:textbox(name,default,callback)
+			function itemshandler:textbox(name,default,callback,flag)
+                flag = flag or name or ""
 				default = default or ""
 				local label = utility.new("TextLabel",{Parent = itemcontainer,BackgroundColor3 = Color3.fromRGB(255, 255, 255),BackgroundTransparency = 1,Size = UDim2.new(0, 175, 0, 14),Font = Enum.Font.SourceSans,Text = name,TextColor3 = Color3.fromRGB(255, 255, 255),TextSize = 14,TextStrokeColor3 = Color3.fromRGB(191, 191, 191),TextXAlignment = Enum.TextXAlignment.Left})
 				local textbox = utility.new("TextBox",{Parent = label,BackgroundColor3 = Color3.fromRGB(25, 25, 25),BorderColor3 = Color3.fromRGB(17, 86, 31),Position = UDim2.new(0, 0, 1.10000002, 0),Size = UDim2.new(0, 175, 0, 14),Font = Enum.Font.SourceSansBold,PlaceholderColor3 = Color3.fromRGB(178, 178, 178),Text = default,TextColor3 = Color3.fromRGB(209, 209, 209),TextSize = 14})
-				textbox.FocusLost:connect(function(p)
+				
+                if flag ~= "" then
+                    flags[flag] = default
+                end
+                
+                textbox.FocusLost:connect(function(p)
 					if not p then return end
+                    if flag ~= "" then
+                        flags[flag] = textbox.Text
+                    end
 					callback(textbox.Text)
-				end)	
+				end)
 			end
 			return itemshandler
 		end
